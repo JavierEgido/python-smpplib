@@ -255,7 +255,6 @@ class Client(object):
         ascii_pdu = binascii.b2a_hex(raw_pdu) #Modified        
 
         self.logger.debug('<<%s (%d bytes)', binascii.b2a_hex(raw_pdu), len(raw_pdu))
-        #print("ascii_pdu_library", ascii_pdu)
 
         pdu = smpp.parse_pdu(
             raw_pdu,
@@ -266,12 +265,12 @@ class Client(object):
         self.logger.debug('Read %s PDU', pdu.command)
 
         if pdu.is_error():
-            return pdu#, ascii_pdu #Modified
+            return pdu, ascii_pdu
 
         elif pdu.command in consts.STATE_SETTERS:
             self.state = consts.STATE_SETTERS[pdu.command]
 
-        return pdu, ascii_pdu #Modified
+        return pdu, ascii_pdu
 
     def accept(self, obj):
         """Accept an object"""
@@ -410,7 +409,7 @@ class Client(object):
 
         ssm = smpp.make_pdu('submit_sm', client=self, **kwargs)
         self.send_pdu(ssm)
-
+        
         try:
             resp, ascii_pdu = self.read_pdu()
         except socket.timeout:
